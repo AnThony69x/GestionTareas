@@ -10,7 +10,7 @@
         <button @click="eliminar(tarea._id)">Eliminar</button>
       </li>
     </ul>
-    <p v-else>No tienes tareas aún.</p>
+    <p v-else>No tienes tareas ñaño, guardate una.</p>
   </div>
 </template>
 
