@@ -7,17 +7,21 @@ const taskSchema = Joi.object({
   title: Joi.string().required(),
   description: Joi.string().allow("").optional(),
   dueDate: Joi.date().optional(),
-  completed: Joi.boolean().optional()
+  completed: Joi.boolean().optional(),
 });
 
 const createTask = async (req, res) => {
   const { error, value } = taskSchema.validate(req.body);
-  if (error) return res.status(400).json({ msg: "Datos inválidos", detalles: error.details });
+  if (error)
+    return res
+      .status(400)
+      .json({ msg: "Datos inválidos", detalles: error.details });
 
   try {
     const task = await Task.create({ ...value, user: req.user.id });
     res.status(201).json(task);
   } catch (err) {
+    console.error("Error en crear tarea", err);
     res.status(500).json({ msg: "Error al crear tarea" });
   }
 };
@@ -27,6 +31,7 @@ const getTasks = async (req, res) => {
     const tasks = await Task.find({ user: req.user.id });
     res.json(tasks);
   } catch (err) {
+    console.error("Error en obtener tarea", err);
     res.status(500).json({ msg: "Error al obtener tareas" });
   }
 };
@@ -39,7 +44,10 @@ const updateTask = async (req, res) => {
   }
 
   const { error, value } = taskSchema.validate(req.body);
-  if (error) return res.status(400).json({ msg: "Datos inválidos", detalles: error.details });
+  if (error)
+    return res
+      .status(400)
+      .json({ msg: "Datos inválidos", detalles: error.details });
 
   try {
     const task = await Task.findOneAndUpdate(
@@ -54,6 +62,7 @@ const updateTask = async (req, res) => {
 
     res.json(task);
   } catch (err) {
+    console.error("Error en actualizar tarea", err);
     res.status(500).json({ msg: "Error al actualizar tarea" });
   }
 };
@@ -74,6 +83,7 @@ const deleteTask = async (req, res) => {
 
     res.json({ msg: "Tarea eliminada" });
   } catch (err) {
+    console.error("Error al eliminar tarea", err);
     res.status(500).json({ msg: "Error al eliminar tarea" });
   }
 };
