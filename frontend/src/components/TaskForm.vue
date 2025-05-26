@@ -24,12 +24,16 @@ const dueDate = ref('')
 
 const crearTarea = async () => {
   try {
+    // Convertir status a completed (booleano)
+    const completed = status.value === 'completada'
+    
     await api.post('/tasks', {
       title: title.value,
       description: description.value,
-      status: status.value,
+      completed: completed,
       dueDate: dueDate.value
     })
+    
     title.value = ''
     description.value = ''
     status.value = 'pendiente'
@@ -37,6 +41,7 @@ const crearTarea = async () => {
     emit('tarea-creada')
   } catch (error) {
     console.error(error)
+    alert('Error al crear la tarea: ' + (error.response?.data?.msg || 'Error desconocido'))
   }
 }
 </script>
