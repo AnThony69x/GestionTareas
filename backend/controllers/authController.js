@@ -25,6 +25,7 @@ const register = async (req, res) => {
 
     res.status(201).json({ msg: "Usuario registrado correctamente" });
   } catch (err) {
+    console.error("Error en register:", err);
     res.status(500).json({ msg: "Error del servidor" });
   }
 };
@@ -51,6 +52,7 @@ const login = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     res.json({ token });
   } catch (err) {
+    console.error("Error en login:", err);
     res.status(500).json({ msg: "Error del servidor" });
   }
 };
