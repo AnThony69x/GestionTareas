@@ -7,7 +7,7 @@ const taskSchema = Joi.object({
   title: Joi.string().required(),
   description: Joi.string().allow("").optional(),
   dueDate: Joi.date().optional(),
-  completed: Joi.boolean().optional(),
+  status: Joi.string().valid("pendiente", "en_proceso", "completada").optional(),
 });
 
 const createTask = async (req, res) => {

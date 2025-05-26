@@ -4,6 +4,7 @@
     <textarea v-model="description" placeholder="Descripción"></textarea>
     <select v-model="status">
       <option value="pendiente">Pendiente</option>
+      <option value="en_proceso">En Proceso</option>
       <option value="completada">Completada</option>
     </select>
     <input v-model="dueDate" type="date" required />
@@ -30,7 +31,7 @@ const crearTarea = async () => {
     await api.post('/tasks', {
       title: title.value,
       description: description.value,
-      completed: completed,
+      status: status.value,
       dueDate: dueDate.value
     })
     
