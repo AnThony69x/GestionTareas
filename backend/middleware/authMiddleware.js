@@ -2,7 +2,8 @@ const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
   const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ msg: "Token no proporcionado" });
+  if (!authHeader)
+    return res.status(401).json({ msg: "Token no proporcionado" });
 
   const token = authHeader.split(" ")[1];
   try {
@@ -10,6 +11,7 @@ module.exports = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (err) {
+    console.error("Error al verificar token JWT:", err);
     res.status(401).json({ msg: "Token inválido" });
   }
 };
