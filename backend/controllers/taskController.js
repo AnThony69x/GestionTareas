@@ -1,18 +1,21 @@
+const Joi = require("joi");
 const mongoose = require("mongoose");
 const Task = require("../models/Task");
 
-// Validación básica para evitar operadores peligrosos como $ne, $gt, etc.
-const hasForbiddenKeys = (obj) => {
-  return Object.keys(obj).some((key) => key.startsWith("$"));
-};
+// Esquema para crear o actualizar tareas
+const taskSchema = Joi.object({
+  title: Joi.string().required(),
+  description: Joi.string().allow("").optional(),
+  dueDate: Joi.date().optional(),
+  completed: Joi.boolean().optional()
+});
 
 const createTask = async (req, res) => {
-  try {
-    if (hasForbiddenKeys(req.body)) {
-      return res.status(400).json({ msg: "Datos inválidos en la solicitud" });
-    }
+  const { error, value } = taskSchema.validate(req.body);
+  if (error) return res.status(400).json({ msg: "Datos inválidos", detalles: error.details });
 
-    const task = await Task.create({ ...req.body, user: req.user.id });
+  try {
+    const task = await Task.create({ ...value, user: req.user.id });
     res.status(201).json(task);
   } catch (err) {
     res.status(500).json({ msg: "Error al crear tarea" });
@@ -29,20 +32,19 @@ const getTasks = async (req, res) => {
 };
 
 const updateTask = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ msg: "ID de tarea no válido" });
+  }
+
+  const { error, value } = taskSchema.validate(req.body);
+  if (error) return res.status(400).json({ msg: "Datos inválidos", detalles: error.details });
+
   try {
-    const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ msg: "ID de tarea no válido" });
-    }
-
-    if (hasForbiddenKeys(req.body)) {
-      return res.status(400).json({ msg: "Datos inválidos en la solicitud" });
-    }
-
     const task = await Task.findOneAndUpdate(
       { _id: id, user: req.user.id },
-      req.body,
+      value,
       { new: true }
     );
 
@@ -57,13 +59,13 @@ const updateTask = async (req, res) => {
 };
 
 const deleteTask = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ msg: "ID de tarea no válido" });
+  }
+
   try {
-    const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ msg: "ID de tarea no válido" });
-    }
-
     const task = await Task.findOneAndDelete({ _id: id, user: req.user.id });
 
     if (!task) {
