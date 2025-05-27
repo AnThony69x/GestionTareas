@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 
+// Middleware para verificar el token JWT
 module.exports = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader)
@@ -15,4 +16,3 @@ module.exports = (req, res, next) => {
     res.status(401).json({ msg: "Token inválido" });
   }
 };
-// This middleware checks for a valid JWT token in the request headers.

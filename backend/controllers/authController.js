@@ -3,7 +3,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// Esquema de validación para registro
+// Controlador para manejar el registro y login de usuarios
 const registerSchema = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().email().required(),
