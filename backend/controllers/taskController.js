@@ -2,7 +2,7 @@ const Joi = require("joi");
 const mongoose = require("mongoose");
 const Task = require("../models/Task");
 
-// Esquema para crear o actualizar tareas
+// Controlador para manejar las tareas
 const taskSchema = Joi.object({
   title: Joi.string().required(),
   description: Joi.string().allow("").optional(),

@@ -7,7 +7,7 @@ const {
   updateTask,
   deleteTask,
 } = require("../controllers/taskController");
-
+// Rutas para las tareas
 router.use(auth);
 
 router.post("/", createTask);
