@@ -11,9 +11,6 @@
           <router-link to="/dashboard" @click="menuOpen = false">
             <i class="icon">📊</i> Dashboard
           </router-link>
-          <router-link to="/tasks" @click="menuOpen = false">
-            <i class="icon">✅</i> Tareas
-          </router-link>
           <router-link to="/calendar" @click="menuOpen = false">
             <i class="icon">📅</i> Calendario
           </router-link>
@@ -36,14 +33,6 @@
                 <button @click="logout">Cerrar Sesión</button>
               </div>
             </div>
-          </template>
-          <template v-else>
-            <router-link to="/login" class="auth-btn login"
-              >Ingresar</router-link
-            >
-            <router-link to="/register" class="auth-btn register"
-              >Registrarse</router-link
-            >
           </template>
         </div>
       </div>
