@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 
+// PATRÓN: Middleware
+// Intercepta solicitudes HTTP para verificar autenticación antes de llegar al controlador.
 // Middleware para verificar el token JWT
 module.exports = (req, res, next) => {
   const authHeader = req.headers.authorization;

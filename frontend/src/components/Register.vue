@@ -191,6 +191,9 @@ const handleRegister = async () => {
       // Manejar errores específicos del servidor
       if (message.includes("email")) {
         errors.value.email = message;
+      } else if (message.toLowerCase().includes("existe")) {
+        // Mostrar mensaje si el usuario ya existe
+        errors.value.email = "El usuario ya existe";
       } else if (message.includes("contraseña")) {
         errors.value.password = message;
       } else {
