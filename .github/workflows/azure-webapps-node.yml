@@ -80,4 +80,4 @@ jobs:
     - name: Test backend
       working-directory: ./backend
       run: npm run test --if-present
-      continue-on-error: true  # Esta línea permite continuar aunque falle el test
+      continue-on-error: true  # Añade esta línea

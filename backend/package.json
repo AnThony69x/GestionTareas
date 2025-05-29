@@ -5,8 +5,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "echo \"No tests implemented yet\" && exit 0",
-    "build": "echo \"No build step required\""
+    "test": "echo \"No tests implemented yet\" && exit 0"
   },
   "keywords": [],
   "author": "",
