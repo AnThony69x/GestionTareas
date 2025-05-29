@@ -28,3 +28,7 @@ backend/node_modules/
 *.cache
 .cache/
 frontend/.vite/
+
+
+# env
+.env
