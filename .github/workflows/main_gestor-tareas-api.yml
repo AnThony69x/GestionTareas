@@ -20,42 +20,70 @@ jobs:
 
       - name: Debug - List directory structure
         run: |
-          pwd
+          echo "Contenido del directorio raíz:"
           ls -la
-          find . -type f -name "package.json"
-          
+          echo "-----------------------------"
+          echo "Contenido del directorio backend (si existe):"
+          if [ -d "backend" ]; then
+            ls -la backend/
+          else
+            echo "¡No existe carpeta backend!"
+          fi
+          echo "-----------------------------"
+          echo "Buscando package.json:"
+          find . -name "package.json"
+
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'  # Cambiado a la versión 18.x por compatibilidad
 
+      # Intento explícito de trabajar con package.json en directorio backend
       - name: Install dependencies
         run: |
-          # Usar la ruta exacta al package.json según lo que encuentre el paso anterior
           if [ -f "./backend/package.json" ]; then
+            echo "✅ Encontrado package.json en carpeta backend"
             cd backend
-            npm install
+            npm install --no-optional
           elif [ -f "./package.json" ]; then
-            npm install
+            echo "✅ Encontrado package.json en directorio raíz"
+            npm install --no-optional
           else
-            echo "No se encontró package.json"
+            echo "❌ ERROR: No se encontró package.json"
             exit 1
           fi
 
-      - name: npm run build
+      # Separamos los comandos para mejor diagnóstico
+      - name: Build (if script exists)
         run: |
-          cd backend
-          npm run build --if-present
+          if [ -f "./backend/package.json" ]; then
+            cd backend
+            npm run build --if-present
+          elif [ -f "./package.json" ]; then
+            npm run build --if-present
+          fi
 
-      - name: npm run test
+      - name: Test (if script exists)
         run: |
-          cd backend
-          npm run test --if-present
+          if [ -f "./backend/package.json" ]; then
+            cd backend
+            npm run test --if-present
+          elif [ -f "./package.json" ]; then
+            npm run test --if-present
+          fi
 
-      - name: Zip artifact for deployment
+      - name: Prepare artifact for deployment
         run: |
-          cd backend
-          zip -r ../release.zip ./*
+          if [ -d "./backend" ]; then
+            echo "✅ Preparando ZIP desde carpeta backend"
+            cd backend
+            zip -r ../release.zip ./*
+          else
+            echo "✅ Preparando ZIP desde directorio raíz"
+            zip -r release.zip ./*
+          fi
+          echo "Contenido del ZIP:"
+          unzip -l release.zip | head -20
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -80,24 +108,17 @@ jobs:
           name: node-app
 
       - name: Unzip artifact for deployment
-        run: unzip release.zip
-<<<<<<< HEAD
-      
+        run: |
+          unzip release.zip
+          echo "Contenido descomprimido:"
+          ls -la
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_D52B51BF75824AFA87F9668030627F65 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_EDFC41F8E98F43D7900E8088DAA9C383 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_14133AF1745742A1ABCA930838671795 }}
-=======
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_5D83488757D6483FB6828557E871540D }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_2364EFD1D9B4473BBA112BDC99AD6693 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7AE089AB9DD44074A10CC850B7602FC3 }}
->>>>>>> 1e940f8eb2ff022f0d5eb3d2e6fdac9e2150e22f
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
