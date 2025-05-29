@@ -20,14 +20,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import notificationService from '../services/notificationService';
+import { ref, computed, onMounted, watch } from "vue";
+import notificationService from "../services/notificationService";
 
 const props = defineProps({
   tasks: {
     type: Array,
-    default: () => []
-  }
+    default: () => [],
+  },
 });
 
 const showAlert = ref(true);
@@ -47,17 +47,17 @@ const formatDueDate = (dateString) => {
   const date = new Date(dateString);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  
+
   const dueDate = new Date(date);
   dueDate.setHours(0, 0, 0, 0);
-  
+
   if (dueDate.getTime() === today.getTime()) {
-    return '¡Vence hoy!';
+    return "¡Vence hoy!";
   } else if (dueDate.getTime() === tomorrow.getTime()) {
-    return 'Vence mañana';
+    return "Vence mañana";
   } else {
     return `Vence el ${date.toLocaleDateString()}`;
   }
@@ -68,19 +68,19 @@ const getDueDateClass = (dateString) => {
   const date = new Date(dateString);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  
+
   const dueDate = new Date(date);
   dueDate.setHours(0, 0, 0, 0);
-  
+
   if (dueDate.getTime() === today.getTime()) {
-    return 'due-today';
+    return "due-today";
   } else if (dueDate.getTime() === tomorrow.getTime()) {
-    return 'due-tomorrow';
+    return "due-tomorrow";
   } else {
-    return 'due-soon';
+    return "due-soon";
   }
 };
 
@@ -90,16 +90,20 @@ const closeAlert = () => {
 };
 
 // Vigilar cambios en las tareas para actualizar notificaciones
-watch(() => props.tasks, (newTasks) => {
-  if (showAlert.value) {
-    notificationService.notifyUpcomingTasks(newTasks);
-  }
-}, { deep: true });
+watch(
+  () => props.tasks,
+  (newTasks) => {
+    if (showAlert.value) {
+      notificationService.notifyUpcomingTasks(newTasks);
+    }
+  },
+  { deep: true }
+);
 
 onMounted(async () => {
   // Solicitar permiso para notificaciones
   await notificationService.requestNotificationPermission();
-  
+
   // Notificar tareas pendientes al cargar el componente
   if (upcomingTasks.value.length > 0) {
     notificationService.notifyUpcomingTasks(props.tasks);
