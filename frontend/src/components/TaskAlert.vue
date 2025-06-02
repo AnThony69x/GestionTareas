@@ -42,25 +42,68 @@ const visibleTasks = computed(() => {
   return showAlert.value ? upcomingTasks.value : [];
 });
 
+const isToday = (date) => {
+  const today = new Date();
+  const taskDate = new Date(date);
+
+  // Normalizar las fechas (eliminar la parte de la hora)
+  today.setHours(0, 0, 0, 0);
+  taskDate.setHours(0, 0, 0, 0);
+
+  // Comparar solo las fechas
+  return today.getTime() === taskDate.getTime();
+};
+
+const isTomorrow = (date) => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+
+  const taskDate = new Date(date);
+  taskDate.setHours(0, 0, 0, 0);
+
+  return tomorrow.getTime() === taskDate.getTime();
+};
+
 // Formatear la fecha de vencimiento para mostrarla
-const formatDueDate = (dateString) => {
-  const date = new Date(dateString);
+const formatDueDate = (date) => {
+  if (!date) return "";
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const dueDate = new Date(date);
-  dueDate.setHours(0, 0, 0, 0);
+  const taskDate = new Date(date);
+  taskDate.setHours(0, 0, 0, 0);
 
-  if (dueDate.getTime() === today.getTime()) {
-    return "¡Vence hoy!";
-  } else if (dueDate.getTime() === tomorrow.getTime()) {
-    return "Vence mañana";
-  } else {
-    return `Vence el ${date.toLocaleDateString()}`;
+  // Convertir a formato comparable (YYYY-MM-DD)
+  const todayStr = today.toISOString().split("T")[0];
+  const tomorrowStr = tomorrow.toISOString().split("T")[0];
+  const taskDateStr = taskDate.toISOString().split("T")[0];
+
+  // Fechas pasadas
+  if (taskDateStr < todayStr) {
+    const diffTime = today - taskDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return `¡Venció hace ${diffDays} ${diffDays === 1 ? "día" : "días"}!`;
   }
+
+  // Hoy
+  if (taskDateStr === todayStr) {
+    return "¡Vence hoy!";
+  }
+
+  // Mañana
+  if (taskDateStr === tomorrowStr) {
+    return "¡Vence mañana!";
+  }
+
+  // Fecha futura
+  const diffTime = taskDate - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return `Vence en ${diffDays} días`;
 };
 
 // Determinar la clase CSS según la fecha de vencimiento

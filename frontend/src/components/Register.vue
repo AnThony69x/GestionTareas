@@ -6,7 +6,7 @@
         <p class="auth-subtitle">Comienza a organizar tus tareas</p>
       </div>
 
-      <form @submit.prevent="handleRegister" class="auth-form">
+      <form v-if="!registrationComplete" @submit.prevent="handleRegister" class="auth-form">
         <div class="form-group">
           <label for="name">Nombre completo</label>
           <input
@@ -87,6 +87,26 @@
           </p>
         </div>
       </form>
+
+      <!-- Pantalla de confirmación -->
+      <div v-else class="confirmation-screen">
+        <h2>¡Casi listo!</h2>
+        <div class="email-icon">✉️</div>
+        <p>
+          Hemos enviado un correo de confirmación a
+          <strong>{{ formData.email }}</strong>
+        </p>
+        <p>
+          Por favor revisa tu bandeja de entrada (y la carpeta de spam) y haz clic
+          en el enlace de confirmación.
+        </p>
+        <div class="actions">
+          <button @click="goToLogin">Ir a Iniciar Sesión</button>
+          <button @click="resendEmail" :disabled="resending">
+            {{ resending ? 'Reenviando...' : 'Reenviar Email' }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -113,6 +133,8 @@ const errors = ref({
 const showPassword = ref(false);
 const isSubmitting = ref(false);
 const serverError = ref("");
+const registrationComplete = ref(false);
+const resending = ref(false);
 
 const isPasswordValid = computed(() => {
   return {
@@ -183,7 +205,8 @@ const handleRegister = async () => {
       password: formData.value.password,
     });
 
-    router.push("/login");
+    // Mostrar pantalla de confirmación
+    registrationComplete.value = true;
   } catch (error) {
     const message = error.response?.data?.msg || "Error en el registro";
 
@@ -204,6 +227,23 @@ const handleRegister = async () => {
     }
   } finally {
     isSubmitting.value = false;
+  }
+};
+
+const goToLogin = () => {
+  router.push("/login");
+};
+
+const resendEmail = async () => {
+  resending.value = true;
+  try {
+    await api.post("/auth/resend-confirmation", { email: formData.value.email });
+    alert("Email reenviado correctamente");
+  } catch (error) {
+    alert("Error al reenviar el email de confirmación");
+    console.error(error);
+  } finally {
+    resending.value = false;
   }
 };
 </script>
@@ -391,6 +431,28 @@ input:focus {
   text-align: center;
   margin-top: 1rem;
   font-size: 0.9rem;
+}
+
+.confirmation-screen {
+  text-align: center;
+  padding: 2rem;
+  max-width: 500px;
+  margin: 0 auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.email-icon {
+  font-size: 3rem;
+  margin: 1rem 0;
+}
+
+.actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
 }
 
 @media (max-width: 480px) {

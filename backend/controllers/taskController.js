@@ -1,3 +1,4 @@
+const { supabase } = require('../config/supabase');
 const Joi = require("joi");
 const mongoose = require("mongoose");
 const Task = require("../models/Task");
@@ -57,83 +58,157 @@ const createTask = async (req, res) => {
 
   try {
     // Crear tarea asociada al usuario autenticado
-    const task = await Task.create({ ...value, user: req.user.id });
-    res.status(201).json(task);
+    const { title, description, priority, dueDate, status } = req.body;
+    const userId = req.user.id;
+
+    const { data, error: insertError } = await supabase
+      .from('tasks')
+      .insert([
+        {
+          title,
+          description,
+          priority,
+          due_date: dueDate,
+          status,
+          user_id: userId
+        }
+      ])
+      .select();
+
+    if (insertError) throw insertError;
+
+    res.status(201).json(data[0]);
   } catch (err) {
-    console.error("Error en crear tarea:", err);
-    res.status(500).json({ msg: "Error al crear tarea" });
+    console.error('Error al crear tarea:', err);
+    res.status(500).json({ msg: 'Error al crear la tarea' });
   }
 };
 
-// Controlador para obtener tareas
+// Obtener todas las tareas de un usuario
 const getTasks = async (req, res) => {
   try {
-    // Obtener tareas del usuario autenticado
-    const tasks = await Task.find({ user: req.user.id });
-    res.json(tasks);
+    const userId = req.user.id;
+
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    res.json(data);
   } catch (err) {
-    console.error("Error en obtener tareas:", err);
-    res.status(500).json({ msg: "Error al obtener tareas" });
+    console.error('Error al obtener tareas:', err);
+    res.status(500).json({ msg: 'Error al obtener tareas' });
   }
 };
 
-// Controlador para actualizar tarea
+// Obtener una tarea por su ID
+const getTaskById = async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const userId = req.user.id;
+
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('id', taskId)
+      .eq('user_id', userId)
+      .single();
+
+    if (error) {
+      return res.status(404).json({ msg: 'Tarea no encontrada' });
+    }
+
+    res.json(data);
+  } catch (err) {
+    console.error('Error al obtener tarea:', err);
+    res.status(500).json({ msg: 'Error al obtener la tarea' });
+  }
+};
+
+// Actualizar una tarea
 const updateTask = async (req, res) => {
-  const { id } = req.params;
-
-  // Validar ID
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ msg: "ID de tarea no válido" });
-  }
-
-  // Validar datos de entrada
-  const { error, value } = taskSchema.validate(req.body);
-  if (error) {
-    return res
-      .status(400)
-      .json({ msg: "Datos inválidos", detalles: error.details });
-  }
-
   try {
-    // Actualizar tarea si pertenece al usuario
-    const task = await Task.findOneAndUpdate(
-      { _id: id, user: req.user.id },
-      value,
-      { new: true }
-    );
+    const taskId = req.params.id;
+    const userId = req.user.id;
+    const { title, description, priority, dueDate, status } = req.body;
 
-    if (!task) {
-      return res.status(404).json({ msg: "Tarea no encontrada" });
+    // Verificar que la tarea pertenece al usuario
+    const { data: existingTask, error: findError } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('id', taskId)
+      .eq('user_id', userId)
+      .single();
+
+    if (findError || !existingTask) {
+      return res.status(404).json({ msg: 'Tarea no encontrada' });
     }
 
-    res.json(task);
+    // Actualizar la tarea
+    const { data, error } = await supabase
+      .from('tasks')
+      .update({
+        title,
+        description,
+        priority,
+        due_date: dueDate,
+        status,
+        updated_at: new Date()
+      })
+      .eq('id', taskId)
+      .eq('user_id', userId)
+      .select();
+
+    if (error) throw error;
+
+    res.json(data[0]);
   } catch (err) {
-    console.error("Error en actualizar tarea:", err);
-    res.status(500).json({ msg: "Error al actualizar tarea" });
+    console.error('Error al actualizar tarea:', err);
+    res.status(500).json({ msg: 'Error al actualizar la tarea' });
   }
 };
 
-// Controlador para eliminar tarea
+// Eliminar una tarea
 const deleteTask = async (req, res) => {
-  const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ msg: "ID de tarea no válido" });
-  }
-
   try {
-    // Eliminar tarea si pertenece al usuario
-    const task = await Task.findOneAndDelete({ _id: id, user: req.user.id });
+    const taskId = req.params.id;
+    const userId = req.user.id;
 
-    if (!task) {
-      return res.status(404).json({ msg: "Tarea no encontrada" });
+    // Verificar que la tarea pertenece al usuario
+    const { data: existingTask, error: findError } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('id', taskId)
+      .eq('user_id', userId)
+      .single();
+
+    if (findError || !existingTask) {
+      return res.status(404).json({ msg: 'Tarea no encontrada' });
     }
 
-    res.json({ msg: "Tarea eliminada" });
+    // Eliminar la tarea
+    const { error } = await supabase
+      .from('tasks')
+      .delete()
+      .eq('id', taskId)
+      .eq('user_id', userId);
+
+    if (error) throw error;
+
+    res.json({ msg: 'Tarea eliminada correctamente' });
   } catch (err) {
-    console.error("Error al eliminar tarea:", err);
-    res.status(500).json({ msg: "Error al eliminar tarea" });
+    console.error('Error al eliminar tarea:', err);
+    res.status(500).json({ msg: 'Error al eliminar la tarea' });
   }
 };
 
-module.exports = { createTask, getTasks, updateTask, deleteTask };
+module.exports = {
+  getTasks,
+  createTask,
+  getTaskById,
+  updateTask,
+  deleteTask
+};

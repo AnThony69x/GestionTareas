@@ -73,33 +73,51 @@ const title = ref("");
 const description = ref("");
 const status = ref("pendiente");
 const dueDate = ref("");
+const errorMessage = ref("");
+
+const handleCrearTarea = async () => {
+  // Validación básica
+  if (!title.value) {
+    errorMessage.value = "El título es obligatorio";
+    return;
+  }
+  
+  if (!dueDate.value) {
+    errorMessage.value = "La fecha de vencimiento es obligatoria";
+    return;
+  }
+  
+  try {
+    // Enviar directamente sin depender de rutas de depuración
+    const taskData = {
+      title: title.value,
+      description: description.value,
+      dueDate: dueDate.value,
+      status: status.value
+    };
+    
+    console.log("Enviando tarea:", taskData);
+    
+    // Intentar crear la tarea normalmente
+    const response = await api.post('/tasks', taskData);
+    console.log("Tarea creada:", response.data);
+    
+    emit("tarea-creada");
+    limpiarCampos();
+  } catch (error) {
+    console.error("Error al crear tarea:", error);
+    errorMessage.value = "Error al crear la tarea";
+    if (error.response?.data) {
+      console.error("Detalles del error:", error.response.data);
+    }
+  }
+};
 
 const limpiarCampos = () => {
   title.value = "";
   description.value = "";
   status.value = "pendiente";
   dueDate.value = "";
-};
-
-const handleCrearTarea = async () => {
-  try {
-    const nuevaTarea = {
-      title: title.value,
-      description: description.value,
-      status: status.value,
-      dueDate: dueDate.value,
-    };
-
-    await api.post("/tasks", nuevaTarea);
-    emit("tarea-creada");
-    limpiarCampos();
-  } catch (error) {
-    console.error(error);
-    alert(
-      "Error al crear la tarea: " +
-        (error.response?.data?.msg || "Error desconocido")
-    );
-  }
 };
 </script>
 

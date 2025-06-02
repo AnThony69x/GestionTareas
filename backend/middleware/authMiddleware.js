@@ -1,20 +1,38 @@
-const jwt = require("jsonwebtoken");
+const { supabase } = require('../config/supabase');
 
-// PATRÓN: Middleware
-// Intercepta solicitudes HTTP para verificar autenticación antes de llegar al controlador.
 // Middleware para verificar el token JWT
-module.exports = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader)
-    return res.status(401).json({ msg: "Token no proporcionado" });
-
-  const token = authHeader.split(" ")[1];
+module.exports = async (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    // Extraer token del header Authorization
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader) {
+      return res.status(401).json({ msg: "Acceso denegado. Token no proporcionado." });
+    }
+
+    const token = authHeader.split(' ')[1];
+    
+    if (!token) {
+      return res.status(401).json({ msg: "Formato de token incorrecto" });
+    }
+
+    // Verificar el token usando Supabase Auth
+    const { data, error } = await supabase.auth.getUser(token);
+
+    if (error || !data.user) {
+      console.log("Error al verificar token:", error?.message);
+      return res.status(401).json({ msg: "Token inválido o expirado" });
+    }
+
+    // Adjuntar la información del usuario a la solicitud
+    req.user = {
+      id: data.user.id,
+      email: data.user.email
+    };
+
     next();
   } catch (err) {
-    console.error("Error al verificar token JWT:", err);
-    res.status(401).json({ msg: "Token inválido" });
+    console.error("Error en middleware de autenticación:", err);
+    res.status(500).json({ msg: "Error del servidor" });
   }
 };

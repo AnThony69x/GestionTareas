@@ -4,12 +4,18 @@ import Home from "../views/Home.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Login from "../components/Login.vue";
 import Register from "../components/Register.vue";
+import AuthCallback from "../components/AuthCallback.vue";
 
 const routes = [
   { path: "/", name: Home, component: Home },
   { path: "/dashboard", name: Dashboard, component: Dashboard },
   { path: "/login", name: Login, component: Login },
   { path: "/register", name: Register, component: Register },
+  {
+    path: "/auth/callback",
+    name: "AuthCallback",
+    component: AuthCallback,
+  },
 ];
 
 const router = createRouter({

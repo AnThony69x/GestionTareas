@@ -68,6 +68,16 @@
           </p>
         </div>
       </form>
+
+      <!-- Mensaje específico para email no confirmado -->
+      <div v-if="emailNotConfirmed" class="email-confirmation-alert">
+        <h3>⚠️ Correo no confirmado</h3>
+        <p>Debes confirmar tu correo electrónico antes de iniciar sesión.</p>
+        <p>Revisa tu bandeja de entrada o carpeta de spam.</p>
+        <button @click="resendConfirmation" :disabled="resending">
+          {{ resending ? 'Reenviando...' : 'Reenviar correo de confirmación' }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -86,6 +96,8 @@ const errors = ref({
   password: "",
   general: "",
 });
+const emailNotConfirmed = ref(false);
+const resending = ref(false);
 
 const router = useRouter();
 
@@ -138,11 +150,25 @@ const handleLogin = async () => {
 
     if (error.response?.status === 401) {
       errors.value.password = "Credenciales incorrectas";
+    } else if (error.response?.data?.code === "email_not_confirmed") {
+      emailNotConfirmed.value = true;
     } else {
       errors.value.general = message;
     }
   } finally {
     isLoading.value = false;
+  }
+};
+
+const resendConfirmation = async () => {
+  resending.value = true;
+  try {
+    await api.post("/auth/resend-confirmation", { email: email.value });
+    alert("Correo de confirmación reenviado");
+  } catch (error) {
+    alert("Error al reenviar el correo");
+  } finally {
+    resending.value = false;
   }
 };
 </script>
@@ -312,6 +338,15 @@ input:focus {
 
 .register-link:hover {
   text-decoration: underline;
+}
+
+.email-confirmation-alert {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 5px;
+  text-align: center;
 }
 
 @media (max-width: 480px) {
