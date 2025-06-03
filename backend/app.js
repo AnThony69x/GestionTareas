@@ -1,9 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 require('dotenv').config();
-const { supabase } = require("./config/supabase");
+const { testConnection } = require("./config/supabase");
 const taskRoutes = require("./routes/taskRoutes");
 const authRoutes = require("./routes/authRoutes");
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -12,22 +13,10 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
-// Verificación de conexión a Supabase
-const checkSupabaseConnection = async () => {
-  try {
-    // Simple consulta para verificar conexión
-    const { data, error } = await supabase.from('users').select('count').limit(1);
-    if (error) throw error;
-    console.log('Conexión a Supabase establecida correctamente');
-  } catch (err) {
-    console.warn('No se pudo verificar la conexión a Supabase:', err.message);
-    console.log('Verifica tus credenciales y que la tabla "users" exista');
-  }
-};
-
 // Rutas
 app.use("/api/tasks", taskRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 // Ruta de prueba
 app.get("/", (req, res) => {
@@ -42,5 +31,5 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`Servidor en puerto ${PORT}`);
-  checkSupabaseConnection();
+  testConnection();
 });

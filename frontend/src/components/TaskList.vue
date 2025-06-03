@@ -35,7 +35,7 @@
             >
           </div>
 
-          <button @click="eliminarTarea(tarea._id)" class="delete-button">
+          <button @click="eliminarTarea(tarea.id)" class="delete-button">
             <span class="delete-icon">🗑️</span>
             Eliminar
           </button>
@@ -67,6 +67,12 @@ const emit = defineEmits(["tarea-eliminada"]);
 
 const eliminarTarea = async (id) => {
   try {
+    // Validar que el ID exista
+    if (!id) {
+      console.error("Error: ID de tarea no proporcionado");
+      return;
+    }
+
     await api.delete(`/tasks/${id}`);
     emit("tarea-eliminada");
   } catch (error) {

@@ -3,19 +3,6 @@
 
 const { supabase } = require('../config/supabase');
 
-/**
- * Modelo de Tarea para Supabase
- * 
- * Estructura de tabla en Supabase:
- * - id: uuid (primary key, auto-generado)
- * - title: text
- * - description: text
- * - status: text (pendiente, en_proceso, completada)
- * - due_date: timestamptz
- * - user_id: uuid (referencia a auth.users)
- * - created_at: timestamptz (auto-generado)
- * - updated_at: timestamptz (auto-generado)
- */
 const Task = {
   // Crear una nueva tarea
   create: async (taskData) => {

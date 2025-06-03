@@ -1,10 +1,11 @@
 <template>
-  <Navbar />
-  <router-view />
+  <div id="app">
+    <router-view />
+  </div>
 </template>
 
 <script setup>
-import Navbar from "./components/Navbar.vue";
+// Lógica del componente usando Composition API
 </script>
 
 <style>

@@ -109,6 +109,22 @@ const fetchTasks = async () => {
   }
 };
 
+// Eliminar tarea
+const eliminarTarea = async (tarea) => {
+  try {
+    // Verificar que la tarea y su ID existan
+    if (!tarea || !tarea.id) {
+      console.error("No se puede eliminar: ID de tarea no válido");
+      return;
+    }
+    
+    await axios.delete(`/api/tasks/${tarea.id}`);
+    cargarTareas();
+  } catch (error) {
+    console.error("Error al eliminar tarea:", error);
+  }
+};
+
 // Inicialización al montar el componente
 onMounted(() => {
   // Cargar datos iniciales

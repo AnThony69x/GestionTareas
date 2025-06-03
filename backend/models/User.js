@@ -4,16 +4,6 @@
 const { supabase } = require('../config/supabase');
 const bcrypt = require('bcryptjs');
 
-/**
- * Modelo de Usuario para Supabase
- * 
- * Estructura de tabla en Supabase:
- * - id: uuid (primary key, referencia a auth.users)
- * - name: text
- * - email: text (unique)
- * - created_at: timestamptz (auto-generado)
- * - updated_at: timestamptz (auto-generado)
- */
 const User = {
   // Crear un nuevo usuario
   create: async (userData) => {

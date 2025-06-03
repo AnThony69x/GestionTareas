@@ -88,27 +88,32 @@ const handleCrearTarea = async () => {
   }
   
   try {
-    // Enviar directamente sin depender de rutas de depuración
+    // Enviar datos en el formato correcto
     const taskData = {
       title: title.value,
       description: description.value,
-      dueDate: dueDate.value,
+      dueDate: dueDate.value, // Asegúrate de que este formato sea YYYY-MM-DD
       status: status.value
     };
     
     console.log("Enviando tarea:", taskData);
     
-    // Intentar crear la tarea normalmente
+    // Intentar crear la tarea
     const response = await api.post('/tasks', taskData);
     console.log("Tarea creada:", response.data);
     
     emit("tarea-creada");
     limpiarCampos();
+    errorMessage.value = "";
   } catch (error) {
     console.error("Error al crear tarea:", error);
     errorMessage.value = "Error al crear la tarea";
     if (error.response?.data) {
       console.error("Detalles del error:", error.response.data);
+      // Mostrar mensaje más específico si está disponible
+      if (error.response.data.detalles && error.response.data.detalles.length > 0) {
+        errorMessage.value = error.response.data.detalles[0].message || error.response.data.msg;
+      }
     }
   }
 };
