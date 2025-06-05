@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const path = require('path'); // Añadir esta línea
+const path = require("path");
 require('dotenv').config();
 const { testConnection } = require("./config/supabase");
 const taskRoutes = require("./routes/taskRoutes");
@@ -14,23 +14,21 @@ const PORT = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
-// Servir archivos estáticos desde la carpeta public
-app.use(express.static(path.join(__dirname, 'public')));
-
 // Rutas API
 app.use("/api/tasks", taskRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 
-// Ruta de prueba API (cambiada a /api)
-app.get("/api", (req, res) => {
+// Servir archivos estáticos
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Ruta de prueba de API
+app.get("/api/status", (req, res) => {
   res.send("API de Gestión de Tareas funcionando con Supabase");
 });
 
-// Servir el frontend en la ruta raíz y otras rutas no API
-app.get(['/', '/*'], (req, res) => {
-  // Excluir rutas que comienzan con /api
-  if (req.url.startsWith('/api')) return next();
+// Ruta para el frontend (SPA)
+app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
@@ -42,5 +40,9 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`Servidor en puerto ${PORT}`);
-  testConnection();
+  try {
+    testConnection();
+  } catch (error) {
+    console.error("Error al conectar con Supabase:", error);
+  }
 });
