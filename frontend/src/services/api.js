@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'http://localhost:4000/api',
+  baseURL: 'https://gestiontareas-252537812380.europe-west1.run.app/api',
 })
 
 // Añadir token a cada petición si existe
