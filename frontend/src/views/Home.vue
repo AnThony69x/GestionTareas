@@ -4,7 +4,7 @@
     <div class="hero-section">
       <div class="hero-content">
         <h1 class="title animate__animated animate__fadeInDown">
-          ¡Hola mundo, Bienvenido a <span class="highlight">TaskMaster Pro</span>!
+          ¡Hola, Bienvenido a <span class="highlight">TaskMaster Pro</span>!
         </h1>
         <p class="subtitle animate__animated animate__fadeIn animate__delay-1s">
           La herramienta definitiva para organizar tu vida y aumentar tu
