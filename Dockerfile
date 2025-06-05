@@ -1,25 +1,19 @@
-# Etapa 1: Construir el frontend
-FROM node:18 AS frontend-builder
-WORKDIR /app/frontend
-COPY frontend/ ./
-RUN npm install
-RUN npm run build
+# Usa una imagen base de Node
+FROM node:18
 
-# Etapa 2: Configurar el backend
-FROM node:18 AS backend
+# Establece el directorio de trabajo
 WORKDIR /app
-COPY backend/ ./backend
-COPY --from=frontend-builder /app/frontend/dist ./backend/public
 
-# Instalar dependencias del backend
-WORKDIR /app/backend
+# Copia los archivos del backend
+COPY backend/package*.json ./
 RUN npm install
+
+# Copia todo el backend (incluyendo dist/)
+COPY backend/ ./
 
 # Variable de entorno para Cloud Run
-ENV PORT=80
+ENV PORT=8080
+EXPOSE 8080
 
-# Exponer el puerto 80
-EXPOSE 80
-
-# Comando de inicio del servidor
+# Comando para ejecutar la app
 CMD ["node", "app.js"]

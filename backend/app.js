@@ -1,10 +1,6 @@
+const path = require("path");
 const express = require("express");
-const cors = require("cors");
-require('dotenv').config();
-const { testConnection } = require("./config/supabase");
-const taskRoutes = require("./routes/taskRoutes");
-const authRoutes = require("./routes/authRoutes");
-const userRoutes = require('./routes/userRoutes');
+// ... otros imports
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -13,23 +9,22 @@ const PORT = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
-// Rutas
+// ✅ PRIMERO: Rutas de API
 app.use("/api/tasks", taskRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 
-// Ruta de prueba
-app.get("/", (req, res) => {
-  res.send("API de Gestión de Tareas funcionando con Supabase");
+// Ruta de prueba API
+app.get("/api", (req, res) => {
+  res.json({ msg: "API funcionando" });
 });
 
-// Middleware para manejo de errores
-app.use((err, req, res, next) => {
-  console.error("Error no controlado:", err);
-  res.status(500).json({ msg: "Error interno del servidor" });
+// ✅ DESPUÉS: Servir archivos estáticos
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// ✅ AL FINAL: Fallback para SPA
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor en puerto ${PORT}`);
-  testConnection();
-});
+// Middleware de errores y servidor...
