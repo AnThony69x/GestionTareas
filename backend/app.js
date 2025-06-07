@@ -35,14 +35,30 @@ app.get("/", (req, res) => {
 // Middleware para manejo de errores
 app.use((err, req, res, next) => {
   console.error("Error no controlado:", err);
-  res.status(500).json({ msg: "Error interno del servidor" });
+  res.status(500).json({ 
+    msg: "Error interno del servidor",
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor en puerto ${PORT}`);
+// Función para iniciar el servidor
+const startServer = async () => {
   try {
-    testConnection();
+    // Verificar conexión a Supabase antes de iniciar
+    const isConnected = await testConnection();
+    if (!isConnected) {
+      console.error("No se pudo conectar con Supabase. El servidor se iniciará pero algunas funcionalidades podrían no funcionar.");
+    }
+
+    app.listen(PORT, () => {
+      console.log(`Servidor iniciado en puerto ${PORT}`);
+      console.log(`Ambiente: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`Modo de desarrollo: ${process.env.NODE_ENV !== 'production'}`);
+    });
   } catch (error) {
-    console.error("Error al conectar con Supabase:", error);
+    console.error("Error al iniciar el servidor:", error);
+    process.exit(1);
   }
-});
+};
+
+startServer();
