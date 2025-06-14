@@ -9,7 +9,7 @@ Aplicación web para gestionar tareas personales por usuario, con autenticación
 ### 🔧 Backend
 - Node.js
 - Express.js
-- MongoDB (con Docker)
+- Supabase 
 - Mongoose
 - JSON Web Token (JWT)
 - Bcrypt
@@ -27,7 +27,7 @@ Aplicación web para gestionar tareas personales por usuario, con autenticación
 ## ⚙️ Requisitos Previos
 
 - Node.js >= 18
-- Docker (para MongoDB)
+- Supabase
 - NPM
 - Navegador moderno
 
