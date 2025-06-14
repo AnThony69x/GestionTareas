@@ -1,6 +1,6 @@
 # 📝 Gestor de Tareas
 
-Aplicación web para gestionar tareas personales por usuario, con autenticación, filtros por estado y fecha de vencimiento. Proyecto dividido en **backend (Node.js + Express + MongoDB)** y **frontend (Vue 3 + Vite)**. Desarrollado con la metodología XP.
+Aplicación web para gestionar tareas personales por usuario, con autenticación, filtros por estado y fecha de vencimiento. Proyecto dividido en **backend (Node.js + Express + Supabase)** y **frontend (Vue 3 + Vite)**. Desarrollado con la metodología XP.
 
 ---
 
@@ -8,9 +8,8 @@ Aplicación web para gestionar tareas personales por usuario, con autenticación
 
 ### 🔧 Backend
 - Node.js
-- Express.js
-- Supabase 
-- Mongoose
+- Express.js 
+- Supabase
 - JSON Web Token (JWT)
 - Bcrypt
 - Dotenv
