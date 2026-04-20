@@ -15,10 +15,10 @@
           class="cta-buttons animate__animated animate__fadeInUp animate__delay-2s"
         >
           <router-link to="/register" class="btn primary">
-            <i class="fas fa-user-plus"></i> Regístrate Gratis
+            <i class="fa-solid fa-user-plus"></i> Regístrate Gratis
           </router-link>
           <router-link to="/login" class="btn secondary">
-            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+            <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
           </router-link>
         </div>
 
@@ -49,7 +49,7 @@
         <div
           class="image-badge animate__animated animate__pulse animate__infinite"
         >
-          <i class="fas fa-trophy"></i> Premio a la Mejor App 2025
+          <i class="fa-solid fa-trophy"></i> Premio a la Mejor App 2025
         </div>
       </div>
     </div>
@@ -154,33 +154,33 @@
 <script setup>
 const features = [
   {
-    icon: "fas fa-tasks",
+    icon: "fa-solid fa-list-check",
     title: "Gestión Intuitiva",
     description:
       "Interfaz limpia y fácil de usar para organizar tus tareas diarias",
   },
   {
-    icon: "fas fa-bell",
+    icon: "fa-solid fa-bell",
     title: "Recordatorios",
     description: "Notificaciones para que nunca olvides una tarea importante",
   },
   {
-    icon: "fas fa-sync-alt",
+    icon: "fa-solid fa-arrows-rotate",
     title: "Sincronización",
     description: "Accede a tus tareas desde cualquier dispositivo",
   },
   {
-    icon: "fas fa-chart-line",
+    icon: "fa-solid fa-chart-line",
     title: "Estadísticas",
     description: "Visualiza tu progreso con gráficos detallados",
   },
   {
-    icon: "fas fa-users",
+    icon: "fa-solid fa-users",
     title: "Colaboración",
     description: "Trabaja en equipo compartiendo proyectos y tareas",
   },
   {
-    icon: "fas fa-lock",
+    icon: "fa-solid fa-lock",
     title: "Seguridad",
     description: "Tus datos protegidos con encriptación de última generación",
   },

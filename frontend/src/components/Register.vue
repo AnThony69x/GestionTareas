@@ -56,9 +56,7 @@
               class="toggle-password"
               @click="showPassword = !showPassword"
             >
-              <i :class="showPassword ? 'far fa-eye-slash' : 'far fa-eye'"
-                >👁️</i
-              >
+              <i :class="showPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'"></i>
             </button>
           </div>
           <span v-if="errors.password" class="error-message">{{
